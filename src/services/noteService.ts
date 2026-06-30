@@ -32,6 +32,6 @@ export async function createNote(newNote: NewNote): Promise<Note> {
   return res.data;
 }
 
-export async function deleteNode(noteId: NoteId) {
+export async function deleteNote(noteId: NoteId) {
   await NOTEHUB_API.delete(`/notes/${noteId}`);
 }

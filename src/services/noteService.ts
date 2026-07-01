@@ -31,10 +31,11 @@ export async function fetchNotes(
 }
 
 export async function createNote(newNote: NewNote): Promise<Note> {
-  const res = await NOTEHUB_API.post("/notes", newNote);
+  const res = await NOTEHUB_API.post<Note>("/notes", newNote);
   return res.data;
 }
 
-export async function deleteNote(noteId: NoteId) {
-  await NOTEHUB_API.delete(`/notes/${noteId}`);
+export async function deleteNote(noteId: NoteId): Promise<Note> {
+  const res = await NOTEHUB_API.delete<Note>(`/notes/${noteId}`);
+  return res.data;
 }

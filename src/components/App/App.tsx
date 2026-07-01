@@ -31,7 +31,7 @@ export default function App() {
     <div className={css.app}>
       <header className={css.toolbar}>
         <SearchBox query={query} onQueryUpdate={setQuery} />
-        {totalPages > 0 && (
+        {totalPages > 1 && (
           <Pagination
             page={page}
             totalPages={totalPages}

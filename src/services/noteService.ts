@@ -23,8 +23,7 @@ export async function fetchNotes(
 ): Promise<NotehubFetchResponse> {
   const res = await NOTEHUB_API.get<NotehubFetchResponse>("/notes", {
     params: {
-      // Needed since requests with empty `query` parameter return 400 malformed query
-      query: query || undefined,
+      search: query,
       page,
     },
   });

@@ -27,11 +27,15 @@ interface NoteFormProps {
 export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
   const formId = useId();
 
-  function handleSubmit(data: {title: string, content: string, tag: string}): void {
+  function handleSubmit(data: {
+    title: string;
+    content: string;
+    tag: string;
+  }): void {
     onSubmit({
       title: data.title.trim(),
       content: data.content.trim(),
-      tag: data.tag as NoteTag
+      tag: data.tag as NoteTag,
     });
   }
 

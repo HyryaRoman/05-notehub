@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import SearchBox from "../SearchBox/SearchBox";
 import Pagination from "../Pagination/Pagination";
 import NoteList from "../NoteList/NoteList";
 import Modal from "../Modal/Modal";
@@ -29,6 +30,7 @@ export default function App() {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
+        <SearchBox query={query} onQueryUpdate={setQuery} />
         {totalPages > 0 && (
           <Pagination
             page={page}
@@ -45,7 +47,10 @@ export default function App() {
       )}
       {isModalOpen && (
         <Modal onClose={() => setModalOpen(false)}>
-          <NoteForm onCancel={() => setModalOpen(false)} onSubmit={handleCreateNote} />
+          <NoteForm
+            onCancel={() => setModalOpen(false)}
+            onSubmit={handleCreateNote}
+          />
         </Modal>
       )}
     </div>

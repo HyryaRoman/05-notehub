@@ -6,13 +6,22 @@ import Modal from "../Modal/Modal";
 import NoteForm from "../NoteForm/NoteForm";
 
 import useNotes from "../../hooks/useNotes";
+import type { Note, NewNote } from "../../types/note";
 
 import css from "./App.module.css";
 
 export default function App() {
   const [query, setQuery] = useState<string>("");
   const [page, setCurrentPage] = useState<number>(1);
-  const { notes, totalPages } = useNotes(query, page);
+  const { notes, totalPages, createNote, deleteNote } = useNotes(query, page);
+
+  async function handleCreateNote(note: NewNote) {
+    createNote(note);
+  }
+
+  async function handleDeleteNote(note: Note) {
+    deleteNote(note.id);
+  }
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
@@ -31,11 +40,11 @@ export default function App() {
         </button>
       </header>
       {notes.length > 0 && (
-        <NoteList notes={notes} onNoteDelete={console.log} />
+        <NoteList notes={notes} onNoteDelete={handleDeleteNote} />
       )}
       {isModalOpen && (
         <Modal onClose={() => setModalOpen(false)}>
-          <NoteForm onCancel={() => setModalOpen(false)} />
+          <NoteForm onCancel={() => setModalOpen(false)} onSubmit={handleCreateNote} />
         </Modal>
       )}
     </div>

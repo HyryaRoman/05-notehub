@@ -6,8 +6,8 @@ import type { Note, NewNote, NoteId } from "../types/note";
 interface NoteList {
   notes: Note[];
   totalPages: number;
-  create: (note: NewNote) => void;
-  delete: (noteId: NoteId) => void;
+  createNote: (note: NewNote) => void;
+  deleteNote: (noteId: NoteId) => void;
   isLoading: boolean;
   isError: boolean;
   isSuccess: boolean;
@@ -47,8 +47,8 @@ export default function useNotes(query: string, page: number): NoteList {
   return {
     notes: data?.notes || [],
     totalPages: data?.totalPages || 0,
-    create: createNoteMutation.mutate,
-    delete: deleteNoteMutation.mutate,
+    createNote: createNoteMutation.mutate,
+    deleteNote: deleteNoteMutation.mutate,
     isLoading,
     isError,
     isSuccess,

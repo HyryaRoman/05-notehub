@@ -1,9 +1,23 @@
 import { useId } from "react";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
-import type { NewNote } from "../../types/note";
+import type { NewNote, NoteTag } from "../../types/note";
 
 import css from "./NoteForm.module.css";
+
+const NOTE_FORM_SCHEMA = Yup.object().shape({
+  title: Yup.string()
+    .min(3, "Title must be at least 3 characters")
+    .max(50, "Title too long")
+    .required("Title is required")
+    .trim(),
+  content: Yup.string().max(500, "Content too long").trim(),
+  tag: Yup.string().oneOf(
+    ["Todo", "Work", "Personal", "Meeting", "Shopping"],
+    "Invalid tag",
+  ),
+});
 
 interface NoteFormProps {
   onCancel: () => void;
@@ -13,9 +27,12 @@ interface NoteFormProps {
 export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
   const formId = useId();
 
-  function handleSubmit(data) {
-    console.log(data);
-    return {};
+  function handleSubmit(data: {title: string, content: string, tag: string}): void {
+    onSubmit({
+      title: data.title.trim(),
+      content: data.content.trim(),
+      tag: data.tag as NoteTag
+    });
   }
 
   return (
@@ -26,6 +43,7 @@ export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
         tag: "Todo",
       }}
       onSubmit={handleSubmit}
+      validationSchema={NOTE_FORM_SCHEMA}
     >
       <Form className={css.form}>
         <div className={css.formGroup}>
@@ -35,8 +53,9 @@ export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
             type="text"
             name="title"
             className={css.input}
+            autoComplete="off"
           />
-          <span name="title" className={css.error} />
+          <ErrorMessage name="title" className={css.error} />
         </div>
 
         <div className={css.formGroup}>
@@ -48,7 +67,7 @@ export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
             rows={8}
             className={css.textarea}
           />
-          <span name="content" className={css.error} />
+          <ErrorMessage name="content" className={css.error} />
         </div>
 
         <div className={css.formGroup}>
@@ -65,7 +84,7 @@ export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
             <option value="Meeting">Meeting</option>
             <option value="Shopping">Shopping</option>
           </Field>
-          <span name="tag" className={css.error} />
+          <ErrorMessage name="tag" className={css.error} />
         </div>
 
         <div className={css.actions}>

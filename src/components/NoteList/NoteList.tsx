@@ -1,13 +1,15 @@
+import useNoteDeleter from "../../hooks/useNoteDeleter";
 import type { Note } from "../../types/note";
 
 import css from "./NoteList.module.css";
 
 interface NoteListProps {
   notes: Note[];
-  onNoteDelete: (note: Note) => void;
 }
 
-export default function NoteList({ notes, onNoteDelete }: NoteListProps) {
+export default function NoteList({ notes }: NoteListProps) {
+  const { deleteNote } = useNoteDeleter();
+
   return (
     <ul className={css.list}>
       {notes.map((note) => (
@@ -16,7 +18,7 @@ export default function NoteList({ notes, onNoteDelete }: NoteListProps) {
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
-            <button className={css.button} onClick={() => onNoteDelete(note)}>
+            <button className={css.button} onClick={() => deleteNote(note.id)} >
               Delete
             </button>
           </div>

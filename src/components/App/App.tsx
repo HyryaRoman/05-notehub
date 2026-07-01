@@ -1,17 +1,28 @@
 import { useState } from "react";
 
+import Pagination from "../Pagination/Pagination";
 import NoteList from "../NoteList/NoteList";
+
 import useNotes from "../../hooks/useNotes";
 
 import css from "./App.module.css";
 
 export default function App() {
-  const [query, setQuery] = useState("");
-  const { notes } = useNotes(query, 1);
+  const [query, setQuery] = useState<string>("");
+  const [page, setCurrentPage] = useState<number>(1);
+  const { notes, totalPages } = useNotes(query, page);
 
   return (
     <div className={css.app}>
-      <header className={css.toolbar}></header>
+      <header className={css.toolbar}>
+        {totalPages > 0 && (
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
+      </header>
       {notes.length > 0 && (
         <NoteList notes={notes} onNoteDelete={console.log} />
       )}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 import SearchBox from "../SearchBox/SearchBox";
 import Pagination from "../Pagination/Pagination";
@@ -16,6 +17,12 @@ export default function App() {
   const [page, setCurrentPage] = useState<number>(1);
   const { notes, totalPages, createNote, deleteNote } = useNotes(query, page);
 
+  const handleQueryUpdate = useDebouncedCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) =>
+      setQuery(event.target.value),
+    500,
+  );
+
   async function handleCreateNote(note: NewNote) {
     createNote(note);
     setModalOpen(false);
@@ -30,7 +37,7 @@ export default function App() {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox query={query} onQueryUpdate={setQuery} />
+        <SearchBox query={query} onQueryUpdate={handleQueryUpdate} />
         {totalPages > 1 && (
           <Pagination
             page={page}

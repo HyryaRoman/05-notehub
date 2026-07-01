@@ -12,7 +12,9 @@ export default function App() {
   return (
     <div className={css.app}>
       <header className={css.toolbar}></header>
-      <NoteList notes={notes} onNoteDelete={console.log} />
+      {notes.length > 0 && (
+        <NoteList notes={notes} onNoteDelete={console.log} />
+      )}
     </div>
   );
 }

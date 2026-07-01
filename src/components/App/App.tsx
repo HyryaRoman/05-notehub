@@ -6,8 +6,14 @@ import Pagination from "../Pagination/Pagination";
 import NoteList from "../NoteList/NoteList";
 import Modal from "../Modal/Modal";
 import NoteForm from "../NoteForm/NoteForm";
+import Loader from "../Loader/Loader";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
-import useNotes from "../../hooks/useNotes";
+import {
+  useNoteList,
+  useNoteCreator,
+  useNoteDeleter,
+} from "../../hooks/useNoteList";
 import type { Note, NewNote } from "../../types/note";
 
 import css from "./App.module.css";
@@ -15,21 +21,28 @@ import css from "./App.module.css";
 export default function App() {
   const [query, setQuery] = useState<string>("");
   const [page, setCurrentPage] = useState<number>(1);
-  const { notes, totalPages, createNote, deleteNote } = useNotes(query, page);
+
+  const noteList = useNoteList(query, page);
+  const noteCreator = useNoteCreator();
+  const noteDeleter = useNoteDeleter();
 
   const handleQueryUpdate = useDebouncedCallback(
     (event: React.ChangeEvent<HTMLInputElement>) =>
       setQuery(event.target.value),
-    500,
+    250,
   );
 
   async function handleCreateNote(note: NewNote) {
-    createNote(note);
-    setModalOpen(false);
+    try {
+      await noteCreator.createNote(note);
+      setModalOpen(false);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async function handleDeleteNote(note: Note) {
-    deleteNote(note.id);
+    noteDeleter.deleteNote(note.id);
   }
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
@@ -38,10 +51,10 @@ export default function App() {
     <div className={css.app}>
       <header className={css.toolbar}>
         <SearchBox query={query} onQueryUpdate={handleQueryUpdate} />
-        {totalPages > 1 && (
+        {noteList.totalPages > 1 && (
           <Pagination
             page={page}
-            totalPages={totalPages}
+            totalPages={noteList.totalPages}
             onPageChange={setCurrentPage}
           />
         )}
@@ -49,15 +62,20 @@ export default function App() {
           Create note +
         </button>
       </header>
-      {notes.length > 0 && (
-        <NoteList notes={notes} onNoteDelete={handleDeleteNote} />
+      {(noteList.isLoading || noteDeleter.isLoading) && <Loader />}
+      {(noteList.isError || noteDeleter.isError) && <ErrorMessage />}
+      {noteList.notes.length > 0 && (
+        <NoteList notes={noteList.notes} onNoteDelete={handleDeleteNote} />
       )}
       {isModalOpen && (
         <Modal onClose={() => setModalOpen(false)}>
           <NoteForm
             onCancel={() => setModalOpen(false)}
             onSubmit={handleCreateNote}
+            disableSubmit={noteCreator.isLoading}
           />
+          {(noteCreator.isLoading) && <Loader />}
+          {(noteCreator.isError) && <ErrorMessage />}{" "}
         </Modal>
       )}
     </div>

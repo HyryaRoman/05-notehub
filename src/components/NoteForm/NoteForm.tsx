@@ -22,9 +22,10 @@ const NOTE_FORM_SCHEMA = Yup.object().shape({
 interface NoteFormProps {
   onCancel: () => void;
   onSubmit: (note: NewNote) => void;
+  disableSubmit: boolean;
 }
 
-export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
+export default function NoteForm({ onCancel, onSubmit, disableSubmit }: NoteFormProps) {
   const formId = useId();
 
   function handleSubmit(data: {
@@ -92,7 +93,7 @@ export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
         </div>
 
         <div className={css.actions}>
-          <button type="button" className={css.cancelButton} onClick={onCancel}>
+          <button type="button" className={css.cancelButton} onClick={onCancel} disabled={disableSubmit}>
             Cancel
           </button>
           <button type="submit" className={css.submitButton} disabled={false}>

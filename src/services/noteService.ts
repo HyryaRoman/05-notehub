@@ -5,7 +5,7 @@ import type { Note, NewNote, NoteId } from "../types/note.ts";
 const NOTEHUB_API = axios.create({
   baseURL: "https://notehub-public.goit.study/api/",
   headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_NODEHUB_TOKEN}`,
+    Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
   },
   params: {
     perPage: 12,
@@ -22,7 +22,11 @@ export async function fetchNotes(
   page: number,
 ): Promise<NotehubFetchResponse> {
   const res = await NOTEHUB_API.get<NotehubFetchResponse>("/notes", {
-    params: { query, page },
+    params: {
+      // Needed since requests with empty `query` parameter return 400 malformed query
+      query: query || undefined,
+      page,
+    },
   });
   return res.data;
 }

@@ -3,6 +3,7 @@ import { useState } from "react";
 import Pagination from "../Pagination/Pagination";
 import NoteList from "../NoteList/NoteList";
 import Modal from "../Modal/Modal";
+import NoteForm from "../NoteForm/NoteForm";
 
 import useNotes from "../../hooks/useNotes";
 
@@ -34,7 +35,7 @@ export default function App() {
       )}
       {isModalOpen && (
         <Modal onClose={() => setModalOpen(false)}>
-          <p>Hello world</p>
+          <NoteForm onCancel={() => setModalOpen(false)}/>
         </Modal>
       )}
     </div>

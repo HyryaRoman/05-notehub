@@ -9,12 +9,8 @@ import NoteForm from "../NoteForm/NoteForm";
 import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 
-import {
-  useNoteList,
-  useNoteCreator,
-  useNoteDeleter,
-} from "../../hooks/useNoteList";
-import type { Note, NewNote } from "../../types/note";
+import { useNoteList, useNoteDeleter } from "../../hooks/useNoteList";
+import type { Note } from "../../types/note";
 
 import css from "./App.module.css";
 
@@ -23,7 +19,6 @@ export default function App() {
   const [page, setCurrentPage] = useState<number>(1);
 
   const noteList = useNoteList(query, page);
-  const noteCreator = useNoteCreator();
   const noteDeleter = useNoteDeleter();
 
   const handleQueryUpdate = useDebouncedCallback(
@@ -31,15 +26,6 @@ export default function App() {
       setQuery(event.target.value),
     250,
   );
-
-  async function handleCreateNote(note: NewNote) {
-    try {
-      await noteCreator.createNote(note);
-      setModalOpen(false);
-    } catch (err) {
-      console.log(err);
-    }
-  }
 
   async function handleDeleteNote(note: Note) {
     noteDeleter.deleteNote(note.id);
@@ -71,11 +57,8 @@ export default function App() {
         <Modal onClose={() => setModalOpen(false)}>
           <NoteForm
             onCancel={() => setModalOpen(false)}
-            onSubmit={handleCreateNote}
-            disableSubmit={noteCreator.isLoading}
+            onSuccess={() => setModalOpen(false)}
           />
-          {(noteCreator.isLoading) && <Loader />}
-          {(noteCreator.isError) && <ErrorMessage />}{" "}
         </Modal>
       )}
     </div>

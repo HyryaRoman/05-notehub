@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { fetchNotes, createNote, deleteNote } from "../services/noteService.ts";
-import type { Note, NewNote, NoteId } from "../types/note";
+import { fetchNotes, deleteNote } from "../services/noteService.ts";
+import type { Note, NoteId } from "../types/note";
 
 interface NoteList {
   notes: Note[];
@@ -24,31 +24,6 @@ export function useNoteList(query: string, page: number): NoteList {
     totalPages: data?.totalPages || 0,
     isLoading,
     isError,
-  };
-}
-
-interface NoteCreator {
-  createNote: (newNote: NewNote) => void;
-  isLoading: boolean;
-  isError: boolean;
-}
-
-export function useNoteCreator(): NoteCreator {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: async (newNote: NewNote) => {
-      return await createNote(newNote);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    },
-  });
-
-  return {
-    createNote: mutation.mutateAsync,
-    isLoading: mutation.isPending,
-    isError: mutation.isError,
   };
 }
 

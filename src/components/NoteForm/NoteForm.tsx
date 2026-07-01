@@ -2,7 +2,10 @@ import { useId } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import type { NewNote, NoteTag } from "../../types/note";
+import Loader from "../Loader/Loader";
+import ErrorDisplay from "../ErrorMessage/ErrorMessage";
+import type { NoteTag } from "../../types/note";
+import useNoteCreator from "../../hooks/useNoteCreator";
 
 import css from "./NoteForm.module.css";
 
@@ -21,23 +24,28 @@ const NOTE_FORM_SCHEMA = Yup.object().shape({
 
 interface NoteFormProps {
   onCancel: () => void;
-  onSubmit: (note: NewNote) => void;
-  disableSubmit: boolean;
+  onSuccess: () => void;
 }
 
-export default function NoteForm({ onCancel, onSubmit, disableSubmit }: NoteFormProps) {
+export default function NoteForm({ onCancel, onSuccess }: NoteFormProps) {
   const formId = useId();
+  const noteCreator = useNoteCreator();
 
-  function handleSubmit(data: {
+  async function handleSubmit(data: {
     title: string;
     content: string;
     tag: string;
-  }): void {
-    onSubmit({
-      title: data.title.trim(),
-      content: data.content.trim(),
-      tag: data.tag as NoteTag,
-    });
+  }) {
+    try {
+      await noteCreator.createNote({
+        title: data.title.trim(),
+        content: data.content.trim(),
+        tag: data.tag as NoteTag,
+      });
+      onSuccess();
+    } catch (err) {
+      console.error("Error while creating a note:", err);
+    }
   }
 
   return (
@@ -62,7 +70,6 @@ export default function NoteForm({ onCancel, onSubmit, disableSubmit }: NoteForm
           />
           <ErrorMessage name="title" className={css.error} />
         </div>
-
         <div className={css.formGroup}>
           <label htmlFor={`${formId}-content`}>Content</label>
           <Field
@@ -74,7 +81,6 @@ export default function NoteForm({ onCancel, onSubmit, disableSubmit }: NoteForm
           />
           <ErrorMessage name="content" className={css.error} />
         </div>
-
         <div className={css.formGroup}>
           <label htmlFor={`${formId}-tag`}>Tag</label>
           <Field
@@ -91,15 +97,25 @@ export default function NoteForm({ onCancel, onSubmit, disableSubmit }: NoteForm
           </Field>
           <ErrorMessage name="tag" className={css.error} />
         </div>
-
         <div className={css.actions}>
-          <button type="button" className={css.cancelButton} onClick={onCancel} disabled={disableSubmit}>
+          <button
+            type="button"
+            className={css.cancelButton}
+            onClick={onCancel}
+            disabled={noteCreator.isLoading}
+          >
             Cancel
           </button>
-          <button type="submit" className={css.submitButton} disabled={false}>
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={noteCreator.isLoading}
+          >
             Create note
           </button>
         </div>
+        {noteCreator.isLoading && <Loader />}
+        {noteCreator.isError && <ErrorDisplay />}
       </Form>
     </Formik>
   );

@@ -17,6 +17,7 @@ export default function App() {
 
   async function handleCreateNote(note: NewNote) {
     createNote(note);
+    setModalOpen(false);
   }
 
   async function handleDeleteNote(note: Note) {

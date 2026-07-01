@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import Pagination from "../Pagination/Pagination";
 import NoteList from "../NoteList/NoteList";
+import Modal from "../Modal/Modal";
 
 import useNotes from "../../hooks/useNotes";
 
@@ -11,6 +12,8 @@ export default function App() {
   const [query, setQuery] = useState<string>("");
   const [page, setCurrentPage] = useState<number>(1);
   const { notes, totalPages } = useNotes(query, page);
+
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
   return (
     <div className={css.app}>
@@ -22,9 +25,17 @@ export default function App() {
             onPageChange={setCurrentPage}
           />
         )}
+        <button className={css.button} onClick={() => setModalOpen(true)}>
+          Create note +
+        </button>
       </header>
       {notes.length > 0 && (
         <NoteList notes={notes} onNoteDelete={console.log} />
+      )}
+      {isModalOpen && (
+        <Modal onClose={() => setModalOpen(false)}>
+          <p>Hello world</p>
+        </Modal>
       )}
     </div>
   );
